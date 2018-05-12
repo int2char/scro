@@ -45,7 +45,6 @@ void Bellmanor::updatS(vector<vector<Sot>>&stpair)
 	int bigN=ncount*nodenum;
 	clean<<<bigN/512+1,512,0>>>(dev_d,dev_p,bigN);
 	cudaMemcpy(d,dev_d,ncount*nodenum*sizeof(int),cudaMemcpyDeviceToHost);
-	//cout<<d[k*S[0]*L[1]*pnodesize+g*S[0]*L[1]+i*S[0]+j]<<" ";
 	for(int k=0;k<L[1];k++)
 		{
 		for(int j=0;j<stpair[0].size();j++)
@@ -69,15 +68,12 @@ void Bellmanor::updatS(vector<vector<Sot>>&stpair)
 }
 void Bellmanor::init(pair<vector<edge>,vector<vector<int>>>ext,vector<pair<int,int>>stpair,int _nodenum)
 {
-	//cout<<"init bellmanor"<<endl;
 	nodenum=_nodenum;
 	pnodesize=nodenum/(NUT);
 	edges=ext.first;
 	esigns=ext.second;
 	stp=stpair;
 	W=WD+1;
-	//st=new int[edges.size()*LY];
-	//te=new int[edges.size()*LY];
 	d=new int[nodenum*LY*YE];
 	p=new int[nodenum*LY*YE];
 	w=new int[edges.size()*LY];
@@ -123,7 +119,6 @@ void Bellmanor::init(pair<vector<edge>,vector<vector<int>>>ext,vector<pair<int,i
 		for(int j=0;j<rus[i].size();j++)
 			rudw[cou2++]=esigns[k][ruw[i][j]];
 	}
-	cout<<"aasdcac "<<edges.size()<<" "<<cou1<<endl;
 	int count=0;
 	cudaMalloc((void**)&dev_d,YE*LY*nodenum*sizeof(int));
 	cudaMalloc((void**)&dev_p,YE*LY*nodenum*sizeof(int));
@@ -141,9 +136,6 @@ void Bellmanor::init(pair<vector<edge>,vector<vector<int>>>ext,vector<pair<int,i
 Bellmanor::Bellmanor():L(PC+1,0),S(PC,0),NF(PC,0),Size(2,0)
 {
 };
-
-//bellmandu<<<blocks_s1,512,0,stream0>>>(dev_rudu,dev_rudw,dev_rid,dev_d,dev_p,i,edges.size(),pnodesize,0,0,S[0]*L[1],S[0],dev_mm,dev_ss);
-
 __global__ void bellmandu(int *rudu,int*rudw,int *rid,int *d,int*p,int K,int EE,int PN,int sizeoff,int leveloff,int yel,int ye,int*mm,int *ss)
 {
 	int i = threadIdx.x + blockIdx.x*blockDim.x;
@@ -168,10 +160,8 @@ __global__ void bellmandu(int *rudu,int*rudw,int *rid,int *d,int*p,int K,int EE,
 }
 vector<vector<Rout>> Bellmanor::routalg(int s,int t,int bw)
 {
-	//cout<<"inbellman"<<endl;
 	int kk=1;
 	time_t start,end;
-	start=clock();
 	cudaStream_t stream0;
 	cudaStreamCreate(&stream0);
 	cudaStream_t stream1;
@@ -181,7 +171,6 @@ vector<vector<Rout>> Bellmanor::routalg(int s,int t,int bw)
 	int sizeoff=S[0]*L[1]*nodenum;
 	for(int i=1;i<WD+1;i++)
 	{
-		//bellmandu(int *rudu,int*rudw,int *rid,int *d,int*p,int K,int EE,int PN,int sizeoff,int leveloff,int yel,int ye,int*mm)
 		bellmandu<<<blocks_s1,512,0,stream0>>>(dev_rudu,dev_rudw,dev_rid,dev_d,dev_p,i,edges.size(),pnodesize,0,0,S[0]*L[1],S[0],dev_mm,dev_ss);
 		bellmandu<<<blocks_s2,512,0,stream0>>>(dev_rudu,dev_rudw,dev_rid,dev_d,dev_p,i,edges.size(),pnodesize,sizeoff,L[1],S[1]*L[2],S[1],dev_mm,dev_ss);
 	}
@@ -206,7 +195,6 @@ vector<vector<Rout>> Bellmanor::routalg(int s,int t,int bw)
 				}
 			}
 	}*/
-	end=clock();
 	vector<vector<Rout>>result(2,vector<Rout>());
 	vector<int>LL(3,0);
 	LL=L;
@@ -214,11 +202,16 @@ vector<vector<Rout>> Bellmanor::routalg(int s,int t,int bw)
 	int count=0;
 	int offg=0;
 	for(int y=1;y<PC+1;y++)
+		{
+		int leoff=S[y-1]*L[y]*pnodesize;
+		int teoff=S[y-1]*L[y];
 		for(int k=LL[y-1];k<LL[y];k++)
 		{	
 			if(y==2)offg=sizeoff;
+			int boff=(k-LL[y-1])*S[y-1]+offg;
 			for(int l=0;l<stps[y-1].size();l++)
 			{	
+				int loff=boff+l;
 				int s=stps[y-1][l].s;
 				vector<int>ters=stps[y-1][l].ters;
 				for(int i=0;i<ters.size();i++)
@@ -230,19 +223,20 @@ vector<vector<Rout>> Bellmanor::routalg(int s,int t,int bw)
 					int prn=-1;
 					for(int v=1;v<W;v++)
 						{
-						if(d[offg+tt*S[y-1]+v*S[y-1]*L[y]*pnodesize+l]<min)
+						if(d[loff+v*leoff+tt*teoff]<min)
 							{	
-								min=d[offg+v*S[y-1]*L[y]*pnodesize+tt*S[y-1]*L[y]+(k-LL[y-1])*S[y-1]+l];
+								min=d[loff+v*leoff+tt*teoff];
 								prn=v;
 							}
 						}
 					if(prn<0||min>50000)continue;
-					int of=offg+prn*S[y-1]*L[y]*pnodesize+(k-LL[y-1])*S[y-1]+l;
+					int of=loff+prn*leoff;
 					Rout S(s,tt,id,min,of,k);
 					result[y-1].push_back(S);
 				}
 				count++;
 			}
+		}
 		}
 	//cout<<"GPU time is : "<<end-start<<endl;
 	return result;

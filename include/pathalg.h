@@ -532,6 +532,13 @@ class BFSor:public algbase
 		vector<vector<int>>nein,neie;
 		vector<event>addevent;
 		vector<vector<int>>delevent;
+		vector<vector<int>>rus,ruw;
+		int *rudu,*dev_rudu;
+		int *rudw,*dev_rudw;
+		int *rid,*dev_rid;
+		int*ss,*dev_ss;
+		int *mm,*dev_mm;
+		vector<vector<int>>esigns;
 	public:
 		 BFSor();
 	 	 void topsort();
@@ -563,8 +570,9 @@ class PBFSor:public algbase{
 		vector<pair<int,int>>stes;
 		vector<vector<Sot>>stpairs;
 		vector<int>L;
+		
 		int W;
-		//add
+		//addesigns
 		vector<vector<vector<int>>>neieid;
 		vector<vector<int>>esigns;
 		vector<vector<int>>tesigns;

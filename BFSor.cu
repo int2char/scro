@@ -19,112 +19,160 @@ __global__ void cleanb(int *d,int *p,int N)
 	d[i]=100000;
 	p[i]=-1;
 };
-void BFSor::updatE(vector<vector<int>>&esigns)
+void BFSor::updatE(vector<vector<int>>&tesigns)
 {
-	int count=0;
+	esigns=tesigns;
+	int cou1=0;
 	for(int k=0;k<LY;k++)
-		for(int i=0;i<nodenum;i++)
-			for(int j=0;j<nein[i].size();j++)
-				{
-					if(esigns[k][neie[i][j]]<0)
-						te[count]=-1;
-					else
-						te[count]=nein[i][j];
-					count++;
-			}
-	cudaMemcpy(dev_te,te,LY*edges.size()*sizeof(int),cudaMemcpyHostToDevice);
+	{
+		for(int i=0;i<pnodesize;i++)
+		for(int j=0;j<rus[i].size();j++)
+			rudw[cou1++]=esigns[k][ruw[i][j]];
+	}
+	cudaMemcpy(dev_rudw,rudw,LY*edges.size()*sizeof(int),cudaMemcpyHostToDevice);
 };
 void BFSor::updatS(vector<vector<Sot>>&stpair)
 {
 	L[0]=0;
-	L[1]=LY1;
-	L[2]=LY2;
-	S[0]=stpair[0].size();
-	S[1]=stpair[1].size();
-	stps=stpair;
-	int count=0;
-	ncount=L[1]*S[0]+L[2]*S[1];
-	int bigN=ncount*nodenum;
-	cleanb<<<bigN/512+1,512,0>>>(dev_d,dev_p,bigN);
-	cudaMemcpy(d,dev_d,ncount*nodenum*sizeof(int),cudaMemcpyDeviceToHost);
-	for(int k=0;k<L[1];k++)
-		{
-		for(int j=0;j<stpair[0].size();j++)
+		L[1]=LY1;
+		L[2]=LY2;
+		S[0]=stpair[0].size();
+		S[1]=stpair[1].size();
+		stps=stpair;
+		int count=0;
+		ncount=L[1]*S[0]+L[2]*S[1];
+		int bigN=ncount*nodenum;
+		cleanb<<<bigN/512+1,512,0>>>(dev_d,dev_p,bigN);
+		cudaMemcpy(d,dev_d,ncount*nodenum*sizeof(int),cudaMemcpyDeviceToHost);
+		//cout<<d[k*S[0]*L[1]*pnodesize+g*S[0]*L[1]+i*S[0]+j]<<" ";
+		for(int k=0;k<L[1];k++)
 			{
-			 d[(stpair[0][j].s)*L[1]*S[0]+k*S[0]+j]=0;
-			 count++;
+			for(int j=0;j<stpair[0].size();j++)
+				{
+				 d[stpair[0][j].s*S[0]*L[1]+k*S[0]+j]=0;
+				 count++;
+				}
 			}
-		}
-	int numoff=count*nodenum;
-	for(int k=0;k<L[2];k++)
-		{
-		for(int j=0;j<stpair[1].size();j++)
+		int off=nodenum*S[0]*L[1];
+		for(int k=0;k<L[2];k++)
 			{
-			 d[(stpair[1][j].s)*L[2]*S[1]+k*S[1]+j+numoff]=0;
-			 count++;
+			for(int j=0;j<stpair[1].size();j++)
+				{
+				 d[stpair[1][j].s*S[1]*L[2]+k*S[1]+j+off]=0;
+				 count++;
+				}
 			}
-		}
-	Size[0]=edges.size()*L[1]*S[0];
-	Size[1]=edges.size()*L[2]*S[1];
-	cudaMemcpy(dev_d,d,ncount*nodenum*sizeof(int),cudaMemcpyHostToDevice);
+		Size[0]=nodenum*L[1]*S[0];
+		Size[1]=nodenum*L[2]*S[1];
+		cudaMemcpy(dev_d,d,ncount*nodenum*sizeof(int),cudaMemcpyHostToDevice);
 }
 void BFSor::init(pair<vector<edge>,vector<vector<int>>>ext,vector<pair<int,int>>stpair,int _nodenum)
 {
 	//cout<<"in paraller BFS init"<<endl;
 	nodenum=_nodenum;
+	pnodesize=nodenum;
 	edges=ext.first;
-	vector<vector<int>>esigns;
 	esigns=ext.second;
 	stp=stpair;
-	mark=new int;
-	*mark=0;
 	W=WD+1;
-	st=new int[edges.size()*LY];
-	te=new int[edges.size()*LY];
-	stid=new int[edges.size()*LY];
+	//st=new int[edges.size()*LY];
+	//te=new int[edges.size()*LY];
 	d=new int[nodenum*LY*YE];
 	p=new int[nodenum*LY*YE];
 	esignes=new int[edges.size()*LY];
-	vector<vector<int>>ein(nodenum*LY,vector<int>());
-	neibn=ein;
-	vector<vector<int>>eie(nodenum,vector<int>());
-	neie=eie;
+	vector<vector<int>>neibn(pnodesize*LY,vector<int>());
+	vector<vector<int>>neie(pnodesize,vector<int>());
+	vector<vector<int>>rs(pnodesize,vector<int>());
+	vector<vector<int>>rw(pnodesize,vector<int>());
+	rus=rs;
+	ruw=rw;
 	for(int i=0;i<edges.size();i++)
 		{
 			int s=edges[i].s;
 			int t=edges[i].t;
+			rus[t].push_back(s);
+			ruw[t].push_back(i);
 			neibn[s].push_back(t);
 			neie[s].push_back(i);
 		}
-	nein=neibn;
-	int count=0;
+	rudu=new int[edges.size()];
+	rudw=new int[edges.size()*LY];
+	rid=new int[edges.size()];
+	int cou1=0;
+	int cou2=0;
+	int cou3=0;
+	mm=new int[pnodesize+1];
+	ss=new int[pnodesize+1];
+	int du=0;
+	for(int i=0;i<pnodesize;i++)
+		{
+			ss[i]=rus[i].size();
+			mm[i]=du;
+			du+=rus[i].size();
+			for(int j=0;j<rus[i].size();j++)
+				rudu[cou1++]=rus[i][j];
+			for(int j=0;j<rus[i].size();j++)	
+				rid[cou3++]=ruw[i][j];
+		}
 	for(int k=0;k<LY;k++)
-		for(int i=0;i<nodenum;i++)
-			for(int j=0;j<neibn[i].size();j++)
-					{
-						st[count]=i;
-						if(esigns[k][neie[i][j]]<0)
-							te[count]=-1;
-						else
-						te[count]=neibn[i][j];
-						stid[count]=neie[i][j];
-						count++;
-					}
-	for(int i=0;i<nodenum*LY*YE;i++)
-		d[i]=2*WD+1,p[i]=-1;
-	cudaMalloc((void**)&dev_st,LY*edges.size()*sizeof(int));
-	cudaMalloc((void**)&dev_te,LY*edges.size()*sizeof(int));
-	cudaMalloc((void**)&dev_stid,LY*edges.size()*sizeof(int));
+	{
+		for(int i=0;i<pnodesize;i++)
+		for(int j=0;j<rus[i].size();j++)
+			rudw[cou2++]=esigns[k][ruw[i][j]];
+	}
+	cout<<"aasdcac "<<edges.size()<<" "<<cou1<<endl;
+	int count=0;
 	cudaMalloc((void**)&dev_d,YE*LY*nodenum*sizeof(int));
 	cudaMalloc((void**)&dev_p,YE*LY*nodenum*sizeof(int));
-	cudaMemcpy(dev_te,te,LY*edges.size()*sizeof(int),cudaMemcpyHostToDevice);
-	cudaMemcpy(dev_st,st,LY*edges.size()*sizeof(int),cudaMemcpyHostToDevice);
-	cudaMemcpy(dev_stid,stid,LY*edges.size()*sizeof(int),cudaMemcpyHostToDevice);
+	cudaMalloc((void**)&dev_mm,(pnodesize+1)*sizeof(int));
+	cudaMalloc((void**)&dev_ss,(pnodesize+1)*sizeof(int));
+	cudaMalloc((void**)&dev_rudu,edges.size()*sizeof(int));
+	cudaMalloc((void**)&dev_rudw,edges.size()*LY*sizeof(int));
+	cudaMalloc((void**)&dev_rid,edges.size()*sizeof(int));
+	cudaMemcpy(dev_rudu,rudu,edges.size()*sizeof(int),cudaMemcpyHostToDevice);
+	cudaMemcpy(dev_rudw,rudw,edges.size()*LY*sizeof(int),cudaMemcpyHostToDevice);
+	cudaMemcpy(dev_rid,rid,edges.size()*sizeof(int),cudaMemcpyHostToDevice);
+	cudaMemcpy(dev_mm,mm,(pnodesize+1)*sizeof(int),cudaMemcpyHostToDevice);
+	cudaMemcpy(dev_ss,ss,(pnodesize+1)*sizeof(int),cudaMemcpyHostToDevice);
 };
 BFSor::BFSor():L(PC+1,0),S(PC,0),NF(PC,0),Size(2,0)
 {
 };
-__global__ void BFSfast(int *st,int *te,int *d,int* p,int *stid,int E,int N,int size,int round,int Leveloff,int numoff,int yel,int ye)
+__global__ void BFSFu(int *rudu,int*rudw,int *rid,int *d,int*p,int K,int EE,int PN,int sizeoff,int leveloff,int yel,int ye,int*mm,int *ss)
+{
+	int i = threadIdx.x + blockIdx.x*blockDim.x;
+	if(i>=yel)return;
+	int ly=i/ye+leveloff;
+	int nid=blockIdx.y;
+	int off=sizeoff;
+	int ii=nid*yel+i+sizeoff;
+	int dm=d[ii];
+	for(int k=mm[nid];k<ss[nid]+mm[nid];k++)
+		{
+			int node=rudu[k];
+			if(rudw[k+EE*ly]<0)continue;
+			int v=d[off+node*yel+i];
+			if(v==K-1&&dm>v){d[ii]=K;break;}
+		}
+}
+__global__ void BFScolor(int *rudu,int*rudw,int *rid,int *d,int*p,int K,int EE,int PN,int sizeoff,int leveloff,int yel,int ye,int*mm,int *ss)
+{
+	int i = threadIdx.x + blockIdx.x*blockDim.x;
+	if(i>=yel)return;
+	int ly=i/ye+leveloff;
+	int nid=blockIdx.y;
+	int off=sizeoff;
+	int ii=nid*yel+i+sizeoff;
+	int dm=d[ii];
+	for(int k=mm[nid];k<ss[nid]+mm[nid];k++)
+		{
+			int node=rudu[k];
+			if(rudw[k+EE*ly]<0)continue;
+			int v=d[off+node*yel+i];
+			if(v+1==d[ii]){p[ii]=rid[k];break;}
+		}
+}
+/*__global__ void BFSfast(int *st,int *te,int *d,int* p,int *stid,int E,int N,int size,int round,int Leveloff,int numoff,int yel,int ye)
 {
 	int i = threadIdx.x + blockIdx.x*blockDim.x;
 	if(i>=yel)return;	
@@ -147,7 +195,7 @@ __global__ void BFScolor(int *st,int *te,int *d,int* p,int *stid,int E,int N,int
 	int offs=s*yel+numoff;
 	int offt=t*yel+numoff;
 	if(d[offs+i]==d[offt+i]-1)p[offt+i]=stid[eeid];
-}
+}*/
 vector<vector<Rout>> BFSor::routalg(int s,int t,int bw)
 {
 	cout<<"blasting "<<endl;
@@ -161,61 +209,64 @@ vector<vector<Rout>> BFSor::routalg(int s,int t,int bw)
 	cudaStreamCreate(&stream1);
 	int leoff=L[1];
 	int nuoff=L[1]*S[0]*nodenum;
-	dim3 blocks_s1(S[0]*L[1]/512+1,edges.size());
-	dim3 blocks_s2(S[1]*L[2]/512+1,edges.size());
+	dim3 blocks_s1(S[0]*L[1]/512+1,pnodesize);
+	dim3 blocks_s2(S[1]*L[2]/512+1,pnodesize);
+	int sizeoff=S[0]*L[1]*nodenum;
+
 	for(int i=1;i<WD+1;i++)
 		{
-			BFSfast<<<blocks_s1,512,0,stream0>>>(dev_st,dev_te,dev_d,dev_p,dev_stid,edges.size(),nodenum,Size[0],i,0,0,S[0]*L[1],S[0]);
-			BFSfast<<<blocks_s2,512,0,stream1>>>(dev_st,dev_te,dev_d,dev_p,dev_stid,edges.size(),nodenum,Size[1],i,leoff,nuoff,S[1]*L[2],S[1]);
+			BFSFu<<<blocks_s1,512,0,stream0>>>(dev_rudu,dev_rudw,dev_rid,dev_d,dev_p,i,edges.size(),pnodesize,0,0,S[0]*L[1],S[0],dev_mm,dev_ss);
+			BFSFu<<<blocks_s2,512,0,stream1>>>(dev_rudu,dev_rudw,dev_rid,dev_d,dev_p,i,edges.size(),pnodesize,sizeoff,L[1],S[1]*L[2],S[1],dev_mm,dev_ss);
 		}
-	BFScolor<<<blocks_s1,512,0,stream0>>>(dev_st,dev_te,dev_d,dev_p,dev_stid,edges.size(),nodenum,Size[0],0,0,0,S[0]*L[1],S[0]);
-	BFScolor<<<blocks_s2,512,0,stream1>>>(dev_st,dev_te,dev_d,dev_p,dev_stid,edges.size(),nodenum,Size[1],0,leoff,nuoff,S[1]*L[2],S[1]);
+	BFScolor<<<blocks_s1,512,0,stream0>>>(dev_rudu,dev_rudw,dev_rid,dev_d,dev_p,0,edges.size(),pnodesize,0,0,S[0]*L[1],S[0],dev_mm,dev_ss);
+	BFScolor<<<blocks_s2,512,0,stream1>>>(dev_rudu,dev_rudw,dev_rid,dev_d,dev_p,0,edges.size(),pnodesize,sizeoff,L[1],S[1]*L[2],S[1],dev_mm,dev_ss);
 	cudaStreamSynchronize(stream1);
 	cudaStreamSynchronize(stream0);
 	cudaMemcpy(d,dev_d,ncount*nodenum*sizeof(int),cudaMemcpyDeviceToHost);
 	cudaMemcpy(p,dev_p,ncount*nodenum*sizeof(int),cudaMemcpyDeviceToHost);
-	/*for(int i=8;i<9;i++)
+	/*for(int i=0;i<1;i++)
 	{
-		cout<<endl;
-		cout<<"ascsacaaaaaaaaaaaaaaaaaaaaaaaa: "<<i<<endl;
-		for(int j=0;j<1;j++)
+		cout<<"********************************************** "<<i<<endl;
+		for(int j=3;j<4;j++)
 			{
-				cout<<endl;
-				for(int k=79;k<80;k++)
-					{
-						cout<<p[i*S[1]*L[2]+j*S[1]+k+nuoff]<<" ";
-						cout<<d[i*S[1]*L[2]+j*S[1]+k+nuoff]<<" ";
-						cout<<i*S[1]*L[2]+j*S[1]+k+nuoff<<endl;
-						//cout<<i<<" "<<S[1]<<" "<<L[2]<<" "<<offg<<" "<<(k-LL[y-1])<<" "<<S[y-1]<<" "<<l<<endl;
-					}
-			}
+					cout<<endl;
+					for(int g=0;g<pnodesize;g++)
+						{
+							//cout<<p[g*S[0]*L[1]+i*S[0]+j]<<" ";
+						}
+				}
 	}*/
 	vector<vector<Rout>>result(2,vector<Rout>());
-	int offer=L[1]*nodenum*stps[0].size();
 	vector<int>LL(3,0);
 	LL=L;
 	LL[2]+=LL[1];
 	int count=0;
 	int offg=0;
 	for(int y=1;y<PC+1;y++)
+		{
+		int teoff=S[y-1]*L[y];
 		for(int k=LL[y-1];k<LL[y];k++)
 		{	
-			if(y==2)offg=nuoff;
+			if(y==2)offg=sizeoff;
+			int boff=(k-LL[y-1])*S[y-1]+offg;
 			for(int l=0;l<stps[y-1].size();l++)
-			{	
+			{	int loff=boff+l;
 				int s=stps[y-1][l].s;
 				vector<int>ters=stps[y-1][l].ters;
 				for(int i=0;i<ters.size();i++)
 				{
 					int id=stps[y-1][l].mmpid[ters[i]];
-					int t=ters[i];
-					int ds=d[t*S[y-1]*L[y]+offg+(k-LL[y-1])*S[y-1]+l];
-					if(ds>WD)continue;
-					Rout S(s,t,id,ds,offg+(k-LL[y-1])*stps[y-1].size()+l,k);
-					result[y-1].push_back(S);			
+					int hop=0;
+					int tt=ters[i];
+					int min=d[tt*teoff+loff];
+					if(min>50000)continue;
+					int of=loff;
+					Rout S(s,tt,id,min,of,k);
+					result[y-1].push_back(S);
 				}
 				count++;
 			}
+		}
 		}
 	end=clock();
 	//cout<<"GPU time is : "<<end-start<<endl;

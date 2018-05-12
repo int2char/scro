@@ -81,7 +81,6 @@ class Graph
         void run(float _ratio,float lambda,float MAXNUM,int _method,int _paral)
         {
         	
-        	//cout<<"fic"<<endl;
         	totaln=0;
         	RATIO=_ratio;
         	LAMBDA=lambda;
@@ -232,7 +231,7 @@ class Graph
         	}
 			float endu=float(1000*clock())/ CLOCKS_PER_SEC;
 			float updating=endu-startu;
-			cout<<"updating time: "<<endu-startu<<endl;
+			//cout<<"updating time: "<<endu-startu<<endl;
 			float startro=float(1000*clock())/ CLOCKS_PER_SEC;
 			vector<vector<Rout>> result;
 			if(PARAL>0)
@@ -242,8 +241,8 @@ class Graph
 			float endro=float(1000*clock())/ CLOCKS_PER_SEC;
 			cout<<"rout alg time: "<<endro-startro<<endl;
 			vector<vector<demand>>remain(PC,vector<demand>());
-			float starta=float(1000*clock())/ CLOCKS_PER_SEC;
-			cout<<"size asasas "<<result[0].size()<<" "<<result[1].size()<<endl;
+			//float starta=float(1000*clock())/ CLOCKS_PER_SEC;
+			//cout<<"size asasas "<<result[0].size()<<" "<<result[1].size()<<endl;
 			for(int k=0;k<PC;k++)
 					for(int i=0;i<result[k].size();i++)
 					{
@@ -268,8 +267,8 @@ class Graph
 											block.push_back(ds[k][i]);
 										}
 							}
-			float mid=float(1000*clock())/ CLOCKS_PER_SEC;
-			cout<<"build queue: "<<mid-starta<<endl;
+			//float mid=float(1000*clock())/ CLOCKS_PER_SEC;
+			//cout<<"build queue: "<<mid-starta<<endl;
 			int count=0;
 			int sss=0;
 			//cout<<stpair[0].size()<<" "<<L[0]<<endl;
@@ -277,6 +276,7 @@ class Graph
 			for(int k=0;k<PC;k++)
 			{
 				int newid=0;
+				int teoff=stpair[k].size()*L[k];
 				while(!dsque[k].empty())
 				{
 						count++;
@@ -303,10 +303,10 @@ class Graph
 									
 									int eid;
 									if(PARAL>0&&IFHOP<=0)
-										eid=router2.p[node*stpair[k].size()*L[k]+offf];
+										eid=router2.p[node*teoff+offf];
 									if(PARAL>0&&IFHOP>0)
 										{
-											eid=router2.p[node*stpair[k].size()*L[k]+offf];
+											eid=router2.p[node*teoff+offf];
 											//cout<<"ds "<<router2.d[node*stpair[k].size()*L[k]+offf];
 											//cout<<k<<" "<<ly<<" "<<" "<<eid<<" "<<node<<" "<<" "<<node*stpair[k].size()*L[k]<<" "<<offf<<endl;
 											//cout<<node*stpair[k].size()*L[k]+offf<<endl;
@@ -316,10 +316,7 @@ class Graph
 									if(IFHOP>0&&PARAL<=0)
 										offf-=n;
 									if(IFHOP>0&&PARAL>0)
-										{
-											offf-=stpair[k].size()*L[k]*n;
-											//cout<<" n is "<<n<<endl;
-										}
+										offf-=teoff*n;
 									if(esignes[ly][eid]<0)
 									{
 										ff=-1;
@@ -351,9 +348,9 @@ class Graph
 				}
 			}
 		float enda=float(1000*clock())/ CLOCKS_PER_SEC;
-		cout<<"add in part : "<<enda-mid<<endl;
+		//cout<<"add in part : "<<enda-mid<<endl;
 		if(cou==1){
-			cout<<"kkkkasdhlkasd"<<endl;
+			//cout<<"kkkkasdhlkasd"<<endl;
 			timecount-=updating;
 		}
 		timecount+=(enda-starty);
@@ -409,8 +406,8 @@ class Graph
 			average.push_back((double)count/(double)addin.size());
 			averhops.push_back((double)hops/(double)addin.size());
 			blocks.push_back(block.size());
-			cout<<"add in rout cost is "<<count<<endl;
-			cout<<"add in is "<<addin.size()<<endl;
+			//cout<<"add in rout cost is "<<count<<endl;
+			//cout<<"add in is "<<addin.size()<<endl;
 			//cout<<"remain size"<<ds[0].size()+ds[1].size()<<endl;
 			//cout<<"block size "<<block.size()<<endl;
 			//cout<<"time is"<<end-start<<endl;
