@@ -1,6 +1,6 @@
 #!/bin/bash
 rm -fr a.out *.txt
-sers=(500 1000 1500 2000 2500 3000 3500 4000)
+sers=(5000 10000 15000 20000 25000 30000 35000 40000 45000 50000)
 for s in ${sers[@]}
 do
 	nvcc -O3 -pg -std=c++11 *.cpp *.cu --gpu-architecture=compute_35 --gpu-code=sm_35 -I ./include -DSERT=$s -DIFHOP=0

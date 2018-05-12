@@ -261,21 +261,21 @@ class PBellmanor:public algbase{
 							d[s]=0;
 							for(int kk=1;kk<=WD;kk++)
 							{
-								for(int i=0;i<pnodesize;i++)
-								{
-									for(int m=0;m<nein[k][i].size();m++)
+									for(int i=0;i<pnodesize;i++)
 									{
-										if(esigns[k][neieid[k][i][m]]>0)
+										for(int m=0;m<nein[k][i].size();m++)
 										{
-											if(neie[k][i][m]+d[neioff-pnodesize+nein[k][i][m]]<d[neioff+i])
-												{
-												 d[neioff+i]=neie[k][i][m]+d[neioff-pnodesize+nein[k][i][m]];
-												 p[off+neioff+i]=neieid[k][i][m];
-												}
+											if(esigns[k][neieid[k][i][m]]>0)
+											{
+												if(neie[k][i][m]+d[neioff-pnodesize+nein[k][i][m]]<d[neioff+i])
+													{
+													 d[neioff+i]=neie[k][i][m]+d[neioff-pnodesize+nein[k][i][m]];
+													 p[off+neioff+i]=neieid[k][i][m];
+													}
+											}
 										}
 									}
-								}
-								neioff+=pnodesize;
+									neioff+=pnodesize;
 							}
 							//cout<<"cn you be"<<endl;
 							/*set<int>ss;
@@ -460,7 +460,8 @@ class Bellmanor:public algbase
 		int*rudw,*dev_rudw;
 		int*ruid,*dev_ruid;
 		int*rid,*dev_rid;
-		int mm;
+		int*mm,*dev_mm;
+		int*ss,*dev_ss;
 		vector<pair<int,int>>stp;
 		//
 		vector<int>L;
