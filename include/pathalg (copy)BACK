@@ -214,9 +214,9 @@ class PBellmanor:public algbase{
 					{
 						int s=edges[i].s;
 						int t=edges[i].t;
-						tmpn[s].push_back(t);
-						tmpe[s].push_back(esigns[k][i]);
-						tmpeid[s].push_back(i);
+						tmpn[t].push_back(s);
+						tmpe[t].push_back(esigns[k][i]);
+						tmpeid[t].push_back(i);
 					}
 				neie.push_back(tmpe);
 				nein.push_back(tmpn);
@@ -257,25 +257,23 @@ class PBellmanor:public algbase{
 							vector<int>ters=stpairs[y-1][l].ters;
 							int size=stpairs[y-1][l].size;
 							int off=ncount*nodenum;
-							int neioff=0;
+							int neioff=pnodesize;
 							d[s]=0;
-							for(int kk=0;kk<WD;kk++)
+							for(int kk=1;kk<=WD;kk++)
 							{
-								
 									for(int i=0;i<pnodesize;i++)
 									{
-										if(d[neioff+i]<INT_MAX/2)
-											for(int m=0;m<nein[k][i].size();m++)
+										for(int m=0;m<nein[k][i].size();m++)
+										{
+											if(esigns[k][neieid[k][i][m]]>0)
 											{
-												if(esigns[k][neieid[k][i][m]]>0)
-												{
-													if(neie[k][i][m]+d[neioff+i]<d[neioff+pnodesize+nein[k][i][m]])
-														{
-														 	 d[neioff+pnodesize+nein[k][i][m]]=d[neioff+i]+neie[k][i][m];
-														 	 p[neioff+pnodesize+nein[k][i][m]+off]=neieid[k][i][m];
-														}
-												}
+												if(neie[k][i][m]+d[neioff-pnodesize+nein[k][i][m]]<d[neioff+i])
+													{
+													 d[neioff+i]=neie[k][i][m]+d[neioff-pnodesize+nein[k][i][m]];
+													 p[off+neioff+i]=neieid[k][i][m];
+													}
 											}
+										}
 									}
 									neioff+=pnodesize;
 							}
