@@ -198,7 +198,7 @@ __global__ void BFScolor(int *st,int *te,int *d,int* p,int *stid,int E,int N,int
 }*/
 vector<vector<Rout>> BFSor::routalg(int s,int t,int bw)
 {
-	cout<<"blasting "<<endl;
+	//cout<<"blasting "<<endl;
 	int kk=1;
 	time_t start,end;
 	start=clock();
