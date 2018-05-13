@@ -219,19 +219,22 @@ class Graph
             L[1]=LY2;
         	float starty=float(1000*clock())/ CLOCKS_PER_SEC;
         	vector<vector<Sot>>stpair=Getspair(ds);
+        	if(PARAL>0)
+			router2.updatE(esignes);
+			else
+			router1.updatE(esignes);
         	float startu=float(1000*clock())/ CLOCKS_PER_SEC;
         	cout<<"get pair: "<<startu-starty<<endl;
         	if(PARAL>0)
 			{router2.updatS(stpair);
-			router2.updatE(esignes);}
+			}
         	else
         	{
         		router1.updatS(stpair);
-        		router1.updatE(esignes);
         	}
 			float endu=float(1000*clock())/ CLOCKS_PER_SEC;
 			float updating=endu-startu;
-			//cout<<"updating time: "<<endu-startu<<endl;
+			cout<<"updating time: "<<endu-startu<<endl;
 			float startro=float(1000*clock())/ CLOCKS_PER_SEC;
 			vector<vector<Rout>> result;
 			if(PARAL>0)
@@ -241,7 +244,7 @@ class Graph
 			float endro=float(1000*clock())/ CLOCKS_PER_SEC;
 			cout<<"rout alg time: "<<endro-startro<<endl;
 			vector<vector<demand>>remain(PC,vector<demand>());
-			//float starta=float(1000*clock())/ CLOCKS_PER_SEC;
+			float starta=float(1000*clock())/ CLOCKS_PER_SEC;
 			//cout<<"size asasas "<<result[0].size()<<" "<<result[1].size()<<endl;
 			for(int k=0;k<PC;k++)
 					for(int i=0;i<result[k].size();i++)
@@ -267,8 +270,8 @@ class Graph
 											block.push_back(ds[k][i]);
 										}
 							}
-			//float mid=float(1000*clock())/ CLOCKS_PER_SEC;
-			//cout<<"build queue: "<<mid-starta<<endl;
+			float mid=float(1000*clock())/ CLOCKS_PER_SEC;
+			cout<<"build queue: "<<mid-starta<<endl;
 			int count=0;
 			int sss=0;
 			//cout<<stpair[0].size()<<" "<<L[0]<<endl;
@@ -348,7 +351,7 @@ class Graph
 				}
 			}
 		float enda=float(1000*clock())/ CLOCKS_PER_SEC;
-		//cout<<"add in part : "<<enda-mid<<endl;
+		cout<<"add in part : "<<enda-mid<<endl;
 		if(cou==1){
 			//cout<<"kkkkasdhlkasd"<<endl;
 			timecount-=updating;

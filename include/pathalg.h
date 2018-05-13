@@ -464,6 +464,7 @@ class Bellmanor:public algbase
 		int*rid,*dev_rid;
 		int*mm,*dev_mm;
 		int*ss,*dev_ss;
+		int *sor,*dev_sor;
 		vector<pair<int,int>>stp;
 		//
 		vector<int>L;
@@ -519,6 +520,7 @@ class BFSor:public algbase
 		int*esignes,*dev_esignes;
 		vector<vector<int>>neibn;
 		int *mark,*dev_mark;
+		int *dev_sor,*sor;
 		vector<pair<int,int>>stp;
 		//add parameters
 		vector<int>L;
