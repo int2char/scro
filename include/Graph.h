@@ -230,7 +230,8 @@ class Graph
         	if(PARAL>0)router2.updatS(stpair);
         	else
         		router1.updatS(stpair);
-			//float startro=float(1000*clock())/ CLOCKS_PER_SEC;
+			float startro=float(1000*clock())/ CLOCKS_PER_SEC;
+			cout<<"updating time "<<startro-startu<<endl;
 			vector<vector<Rout>> result;
 			if(PARAL>0)
 				result=router2.routalg(0,0,0);

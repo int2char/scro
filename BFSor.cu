@@ -12,13 +12,20 @@ void BFSor::allocate(int maxn,int maxedge){
 void BFSor::topsort()
 {
 };
-__global__ void cleanb(int *d,int *p,int N)
+__global__ void cleanb(int *d,int *p,int N,int numoff)
+{
+	int i = threadIdx.x + blockIdx.x*blockDim.x;
+	if(i>=N)return;
+	d[i+numoff]=100000;
+	p[i+numoff]=-1;
+};
+/*__global__ void cleanb(int *d,int *p,int N)
 {
 	int i = threadIdx.x + blockIdx.x*blockDim.x;
 	if(i>=N)return;
 	d[i]=100000;
 	p[i]=-1;
-};
+};*/
 void BFSor::updatE(vector<vector<int>>&tesigns)
 {
 	esigns=tesigns;
@@ -48,17 +55,19 @@ void BFSor::updatS(vector<vector<Sot>>&stpair)
 	S[0]=stpair[0].size();
 	S[1]=stpair[1].size();
 	stps=stpair;
-	int count=0;
 	ncount=L[1]*S[0]+L[2]*S[1];
-	int bigN=ncount*nodenum;
-	int numoff=L[1]*S[0]*nodenum;
-	cleanb<<<bigN/512+1,512,0>>>(dev_d,dev_p,bigN);
+	int bigN=ncount*pnodesize;
+	int numoff=L[1]*S[0]*pnodesize;
+		
+	int count=0;
 	for(int j=0;j<stpair[0].size();j++)
-			sor[count++]=stpair[0][j].s;
+		sor[count++]=stpair[0][j].s;
 	int fs=count;
 	for(int j=0;j<stpair[1].size();j++)
 		sor[count++]=stpair[1][j].s;
 	cudaMemcpy(dev_sor,sor,count*sizeof(int),cudaMemcpyHostToDevice);
+	cleanb<<<L[1]*S[0]*pnodesize/512+1,512>>>(dev_d,dev_p,L[1]*S[0]*pnodesize,0);
+	cleanb<<<L[2]*S[1]*pnodesize/512+1,512>>>(dev_d,dev_p,L[2]*S[1]*pnodesize,numoff);
 	Sorb<<<L[1]*S[0]/512+1,512>>>(dev_d,dev_p,dev_sor,L[1]*S[0],S[0],0,0);
 	Sorb<<<L[2]*S[1]/512+1,512>>>(dev_d,dev_p,dev_sor,L[2]*S[1],S[1],fs,numoff);
 	Size[0]=nodenum*L[1]*S[0];
