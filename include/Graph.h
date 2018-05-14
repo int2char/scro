@@ -231,16 +231,16 @@ class Graph
         	else
         		router1.updatS(stpair);
 			float startro=float(1000*clock())/ CLOCKS_PER_SEC;
-			cout<<"updating time "<<startro-startu<<endl;
+			//cout<<"updating time "<<startro-startu<<endl;
 			vector<vector<Rout>> result;
 			if(PARAL>0)
 				result=router2.routalg(0,0,0);
 			else
 				result=router1.routalg(0,0,0);
-			float endro=float(1000*clock())/ CLOCKS_PER_SEC;
-			cout<<"rout alg time: "<<endro-startro<<endl;
+			//float endro=float(1000*clock())/ CLOCKS_PER_SEC;
+			//cout<<"rout alg time: "<<endro-startro<<endl;
 			vector<vector<demand>>remain(PC,vector<demand>());
-			float starta=float(1000*clock())/ CLOCKS_PER_SEC;
+			//float starta=float(1000*clock())/ CLOCKS_PER_SEC;
 			//cout<<"size asasas "<<result[0].size()<<" "<<result[1].size()<<endl;
 			for(int k=0;k<PC;k++)
 					for(int i=0;i<result[k].size();i++)
@@ -266,8 +266,8 @@ class Graph
 											block.push_back(ds[k][i]);
 										}
 							}
-			float mid=float(1000*clock())/ CLOCKS_PER_SEC;
-			cout<<"build queue: "<<mid-starta<<endl;
+			//float mid=float(1000*clock())/ CLOCKS_PER_SEC;
+			//cout<<"build queue: "<<mid-starta<<endl;
 			int count=0;
 			int sss=0;
 			//cout<<stpair[0].size()<<" "<<L[0]<<endl;
@@ -347,7 +347,7 @@ class Graph
 				}
 			}
 		float enda=float(1000*clock())/ CLOCKS_PER_SEC;
-		cout<<"add in part : "<<enda-mid<<endl;
+		//cout<<"add in part : "<<enda-mid<<endl;
 		if(cou==1){
 			timecount-=updating;
 		}
