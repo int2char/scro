@@ -81,6 +81,7 @@ void BFSor::init(pair<vector<edge>,vector<vector<int>>>ext,vector<pair<int,int>>
 	p=new int[nodenum*LY*YE];
 	esignes=new int[edges.size()*LY];
 	vector<vector<int>>neibn(pnodesize*LY,vector<int>());
+	vector<vector<int>>neie(pnodesize,vector<int>());
 	vector<vector<int>>rs(pnodesize,vector<int>());
 	vector<vector<int>>rw(pnodesize,vector<int>());
 	rus=rs;
@@ -89,9 +90,10 @@ void BFSor::init(pair<vector<edge>,vector<vector<int>>>ext,vector<pair<int,int>>
 		{
 			int s=edges[i].s;
 			int t=edges[i].t;
-			rus[s].push_back(t);
-			ruw[s].push_back(i);
-			neibn[t].push_back(s);
+			rus[t].push_back(s);
+			ruw[t].push_back(i);
+			neibn[s].push_back(t);
+			neie[s].push_back(i);
 		}
 	rudu=new int[edges.size()];
 	rudw=new int[edges.size()*LY];
@@ -138,37 +140,38 @@ void BFSor::init(pair<vector<edge>,vector<vector<int>>>ext,vector<pair<int,int>>
 BFSor::BFSor():L(PC+1,0),S(PC,0),NF(PC,0),Size(2,0)
 {
 };
-__global__ void BFSFu(int *rudu,int*rudw,int *rid,int *d,int*p,int K,int EE,int PN,int off,int leveloff,int yel,int ye,int*mm,int *ss)
+__global__ void BFSFu(int *rudu,int*rudw,int *rid,int *d,int*p,int K,int EE,int PN,int sizeoff,int leveloff,int yel,int ye,int*mm,int *ss)
 {
 	int i = threadIdx.x + blockIdx.x*blockDim.x;
 	if(i>=yel)return;
 	int ly=i/ye+leveloff;
 	int nid=blockIdx.y;
-	int ii=nid*yel+i+off;
-	if(d[ii]!=K)return;
+	int off=sizeoff;
+	int ii=nid*yel+i+sizeoff;
 	int dm=d[ii];
 	for(int k=mm[nid];k<ss[nid]+mm[nid];k++)
 		{
-			int node=rudu[k]*yel;
+			int node=rudu[k];
 			if(rudw[k+EE*ly]<0)continue;
-			int v=d[off+node+i];
-			if(v>dm+1){d[off+node+i]=K+1;}
+			int v=d[off+node*yel+i];
+			if(v==K-1&&dm>v){d[ii]=K;break;}
 		}
 }
-__global__ void BFScolor(int *rudu,int*rudw,int *rid,int *d,int*p,int K,int EE,int PN,int off,int leveloff,int yel,int ye,int*mm,int *ss)
+__global__ void BFScolor(int *rudu,int*rudw,int *rid,int *d,int*p,int K,int EE,int PN,int sizeoff,int leveloff,int yel,int ye,int*mm,int *ss)
 {
 	int i = threadIdx.x + blockIdx.x*blockDim.x;
 	if(i>=yel)return;
 	int ly=i/ye+leveloff;
 	int nid=blockIdx.y;
-	int ii=nid*yel+i+off;
+	int off=sizeoff;
+	int ii=nid*yel+i+sizeoff;
 	int dm=d[ii];
 	for(int k=mm[nid];k<ss[nid]+mm[nid];k++)
 		{
-			int node=rudu[k]*yel;
+			int node=rudu[k];
 			if(rudw[k+EE*ly]<0)continue;
-			int v=d[off+node+i];
-			if(v==d[ii]+1){p[off+node+i]=rid[k];}
+			int v=d[off+node*yel+i];
+			if(v+1==d[ii]){p[ii]=rid[k];break;}
 		}
 }
 /*__global__ void BFSfast(int *st,int *te,int *d,int* p,int *stid,int E,int N,int size,int round,int Leveloff,int numoff,int yel,int ye)
@@ -212,7 +215,7 @@ vector<vector<Rout>> BFSor::routalg(int s,int t,int bw)
 	dim3 blocks_s2(S[1]*L[2]/512+1,pnodesize);
 	int sizeoff=S[0]*L[1]*nodenum;
 
-	for(int i=0;i<WD;i++)
+	for(int i=1;i<WD+1;i++)
 		{
 			BFSFu<<<blocks_s1,512,0,stream0>>>(dev_rudu,dev_rudw,dev_rid,dev_d,dev_p,i,edges.size(),pnodesize,0,0,S[0]*L[1],S[0],dev_mm,dev_ss);
 			BFSFu<<<blocks_s2,512,0,stream1>>>(dev_rudu,dev_rudw,dev_rid,dev_d,dev_p,i,edges.size(),pnodesize,sizeoff,L[1],S[1]*L[2],S[1],dev_mm,dev_ss);

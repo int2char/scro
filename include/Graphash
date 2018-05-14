@@ -231,14 +231,14 @@ class Graph
         	else
         		router1.updatS(stpair);
 			float startro=float(1000*clock())/ CLOCKS_PER_SEC;
-			cout<<"updating time "<<startro-startu<<endl;
+			//cout<<"updating time "<<startro-startu<<endl;
 			vector<vector<Rout>> result;
 			if(PARAL>0)
 				result=router2.routalg(0,0,0);
 			else
 				result=router1.routalg(0,0,0);
-			float endro=float(1000*clock())/ CLOCKS_PER_SEC;
-			cout<<"rout alg time: "<<endro-startro<<endl;
+			//float endro=float(1000*clock())/ CLOCKS_PER_SEC;
+			//cout<<"rout alg time: "<<endro-startro<<endl;
 			vector<vector<demand>>remain(PC,vector<demand>());
 			float starta=float(1000*clock())/ CLOCKS_PER_SEC;
 			//cout<<"size asasas "<<result[0].size()<<" "<<result[1].size()<<endl;
@@ -247,19 +247,19 @@ class Graph
 					{
 							int id=result[k][i].id;
 							int vv=result[k][i].di;
-							ds[k][id].routid.push(make_pair(i,vv));
+							ds[k][id].mmp[vv].push_back(i);
 					}
-			//cout<<"here!"<<endl;
-			//cout<<result[0].size()<<" "<<result[1].size()<<endl;
+			float sa=float(1000*clock())/ CLOCKS_PER_SEC;
+			cout<<"buidfirst "<<sa-starta<<endl;
 			vector<priority_queue<pair<int,int>,vector<pair<int,int>>,paircomp>>dsque(2,priority_queue<pair<int,int>,vector<pair<int,int>>,paircomp>());
 			for(int k=0;k<PC;k++)
 					for(int i=0;i<ds[k].size();i++)
 							{
-									if(!ds[k][i].routid.empty())
+									map<int,vector<int>>::iterator iter=ds[k][i].mmp.begin();
+									if((*iter).second.size()>0)
 											{
-											  int vv=ds[k][i].routid.top().second;
+											  int vv=(*iter).first;
 											  dsque[k].push(make_pair(i,vv));
-											  
 											}
 									else
 										{
@@ -267,11 +267,9 @@ class Graph
 										}
 							}
 			float mid=float(1000*clock())/ CLOCKS_PER_SEC;
-			cout<<"build queue: "<<mid-starta<<endl;
+			cout<<"build queue: "<<mid-sa<<endl;
 			int count=0;
 			int sss=0;
-			//cout<<stpair[0].size()<<" "<<L[0]<<endl;
-			//cout<<stpair[1].size()<<" "<<L[1]<<endl;
 			for(int k=0;k<PC;k++)
 			{
 				int newid=0;
@@ -283,60 +281,65 @@ class Graph
 						demand nde=ds[k][pp.first];
 						dsque[k].pop();
 						int flag=0;
-						while(!nde.routid.empty())
+						map<int,vector<int>>::iterator iter=nde.mmp.begin();
+						//while(!nde.routid.empty())
+						for(iter;iter!=nde.mmp.end();iter++)
 						{
-								int id=nde.routid.top().first;
-								nde.routid.pop();
-								Rout RR=result[k][id];
-								int ly=RR.ly;
-								int offf=RR.offf;
-								int v=RR.di;	
-								int s=RR.s;
-								int node=RR.t;
-								vector<int>rout;
-								int ff=1;
-								int wv=0;
-								//cout<<"st is "<<s<<" "<<RR.t<<endl;
-								while(node!=s)
-								{
-									
-									int eid;
-									if(PARAL>0&&IFHOP<=0)
-										eid=router2.p[node*teoff+offf];
-									if(PARAL>0&&IFHOP>0)
-										{
-											eid=router2.p[node*teoff+offf];
-											//cout<<"ds "<<router2.d[node*stpair[k].size()*L[k]+offf];
-											//cout<<k<<" "<<ly<<" "<<" "<<eid<<" "<<node<<" "<<" "<<node*stpair[k].size()*L[k]<<" "<<offf<<endl;
-											//cout<<node*stpair[k].size()*L[k]+offf<<endl;
-										}
-									if(PARAL<=0)
-										eid=router1.p[node+offf];
-									if(IFHOP>0&&PARAL<=0)
-										offf-=n;
-									if(IFHOP>0&&PARAL>0)
-										offf-=teoff*n;
-									if(esignes[ly][eid]<0)
+							if(flag!=0)break;
+							for(int jg=0;jg<(*iter).second.size();jg++)
+							{
+									int id=(*iter).second[jg];
+									Rout RR=result[k][id];
+									int ly=RR.ly;
+									int offf=RR.offf;
+									int v=RR.di;	
+									int s=RR.s;
+									int node=RR.t;
+									vector<int>rout;
+									int ff=1;
+									int wv=0;
+									//cout<<"st is "<<s<<" "<<RR.t<<endl;
+									while(node!=s)
 									{
-										ff=-1;
-										break;
-									}
-									wv+=esignes[ly][eid];
-									rout.push_back(eid);
-									node=edges[eid].s;
-								}
-								if(ff<0)continue;
-								for(int i=0;i<rout.size();i++)
+										
+										int eid;
+										if(PARAL>0&&IFHOP<=0)
+											eid=router2.p[node*teoff+offf];
+										if(PARAL>0&&IFHOP>0)
+											{
+												eid=router2.p[node*teoff+offf];
+												//cout<<"ds "<<router2.d[node*stpair[k].size()*L[k]+offf];
+												//cout<<k<<" "<<ly<<" "<<" "<<eid<<" "<<node<<" "<<" "<<node*stpair[k].size()*L[k]<<" "<<offf<<endl;
+												//cout<<node*stpair[k].size()*L[k]+offf<<endl;
+											}
+										if(PARAL<=0)
+											eid=router1.p[node+offf];
+										if(IFHOP>0&&PARAL<=0)
+											offf-=n;
+										if(IFHOP>0&&PARAL>0)
+											offf-=teoff*n;
+										if(esignes[ly][eid]<0)
 										{
-												int eid=rout[i];
-												esignes[ly][eid]*=-1;
+											ff=-1;
+											break;
 										}
-								flag=rout.size();
-								nde.rout=rout;
-								nde.mark=ly;
-								nde.value=wv;
-								addin.push_back(nde);
-								break;
+										wv+=esignes[ly][eid];
+										rout.push_back(eid);
+										node=edges[eid].s;
+									}
+									if(ff<0)continue;
+									for(int i=0;i<rout.size();i++)
+											{
+													int eid=rout[i];
+													esignes[ly][eid]*=-1;
+											}
+									flag=rout.size();
+									nde.rout=rout;
+									nde.mark=ly;
+									nde.value=wv;
+									addin.push_back(nde);
+									break;
+							}
 						}
 						if(flag==0){
 								int nid=newid++;
@@ -346,8 +349,9 @@ class Graph
 						}
 				}
 			}
+		cout<<remain[0].size()<<" "<<remain[1].size()<<endl;
 		float enda=float(1000*clock())/ CLOCKS_PER_SEC;
-		cout<<"add in part : "<<enda-mid<<endl;
+		//cout<<"add in part : "<<enda-mid<<endl;
 		if(cou==1){
 			timecount-=updating;
 		}
@@ -404,8 +408,8 @@ class Graph
 			average.push_back((double)count/(double)addin.size());
 			averhops.push_back((double)hops/(double)addin.size());
 			blocks.push_back(block.size());
-			//cout<<"add in rout cost is "<<count<<endl;
-			//cout<<"add in is "<<addin.size()<<endl;
+			cout<<"add in rout cost is "<<count<<endl;
+			cout<<"add in is "<<addin.size()<<endl;
 			//cout<<"remain size"<<ds[0].size()+ds[1].size()<<endl;
 			//cout<<"block size "<<block.size()<<endl;
 			//cout<<"time is"<<end-start<<endl;
