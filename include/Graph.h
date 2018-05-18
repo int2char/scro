@@ -91,30 +91,25 @@ class Graph
         	int count=0;
         	current=0;
         	int release=0;
-            	vector<pair<int,pair<int,int>>>ee(MAXITER,pair<int,pair<int,int>>(-1,pair<int,int>(-1,-1)));
-            	vector<vector<pair<int,int>>>dd(MAXITER,vector<pair<int,int>>());
+            vector<pair<int,pair<int,int>>>ee(MAXITER,pair<int,pair<int,int>>(-1,pair<int,int>(-1,-1)));
+            vector<vector<pair<int,int>>>dd(MAXITER,vector<pair<int,int>>());
         	addevent=ee;
         	delevent=dd;
         	for(int i=0;i<ADDNUM;i++)
         	{
-        		double k=rand()%500000;
-        		if(k/500000<=RATIO)
+        		double k=rand()%50000000;
+        		if(k/50000000<=RATIO)
         			{
         				addevent[i].first=1;
         				addevent[i].second.first=rand()%10+10;
-        				addevent[i].second.second=rand()%10+10;
+        				addevent[i].second.second=rand()%30+30;
         			}
         	}
-        	//cout<<"asd"<<endl;
-        	//cout<<current<<endl;
     		int tongj=0;
-
         	for(int h=0;h<ADDNUM;h++)
         	{
         		if(delevent[h].size()>0)
         		{
-            		//cout<<"deleting.................... "<<current<<endl;
-            		//cout<<delevent[h].size()<<endl;
             		tongj++;
 					for(int i=0;i<delevent[h].size();i++)
 					{
@@ -123,8 +118,6 @@ class Graph
 						esignes[k][eid]*=-1;
 
 					}
-					//router2.updatE(esignes);
-					//router1.updatE(esignes);
         		}
         		if(addevent[current].first>0)
         		{
@@ -134,11 +127,6 @@ class Graph
         		}
         		current++;
         	}
-        	//cout<<"&&&&&&&&&&&&&&&&&&&& "<<"tongji is:"<<tongj<<" "<<totaln<<endl;
-        	
-        	//cout<<"kkkk"<<endl;
-        	//cout<<"release: "<<release<<endl;
-        	//cout<<"beasy: "<<busy<<endl;
         	for(int i=0;i<average.size();i++)
         		cout<<average[i]<<" ";
         	cout<<endl;
@@ -361,8 +349,8 @@ class Graph
         	int num2=addevent[current].second.second;
         	//cout<<"fuck"<<endl;
         	tasknum.push_back(num1*DSIZE);
-        	tasknum.push_back(num2*3*DSIZE);
-        	totaln+=num1*DSIZE+num2*3*DSIZE;
+        	tasknum.push_back(num2*DSIZE);
+        	totaln+=num1*DSIZE+num2*DSIZE;
         	vector<vector<demand>>ds=Gendemand(tasknum);
         	int totalnum=tasknum[0]+tasknum[1];
         	tasksize.push_back(tasknum[0]+tasknum[1]);
@@ -405,9 +393,9 @@ class Graph
 			averhops.push_back((double)hops/(double)addin.size());
 			blocks.push_back(block.size());
 			//cout<<"add in rout cost is "<<count<<endl;
-			//cout<<"add in is "<<addin.size()<<endl;
+			cout<<"add in is "<<addin.size()<<endl;
 			//cout<<"remain size"<<ds[0].size()+ds[1].size()<<endl;
-			//cout<<"block size "<<block.size()<<endl;
+			cout<<"block size "<<block.size()<<endl;
 			//cout<<"time is"<<end-start<<endl;
 		}
         void serialadd(vector<vector<demand>>&ds,vector<demand>&addin,vector<demand>&block,double&timecount)

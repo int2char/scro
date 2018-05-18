@@ -21,7 +21,7 @@
 	#define NODE 100
 #endif
 #ifndef DSIZE
-	#define DSIZE 2
+	#define DSIZE 1
 #endif
 #ifndef SERT
 	#define SERT 20000
@@ -30,13 +30,13 @@
 	#define IFHOP 0
 #endif
 #ifndef OBNUM
-	#define OBNUM 5000000
+	#define OBNUM 500000
 #endif
 
 #define PC 2
 #define LY1 ((LY/4))
 #define LY2 ((LY/4)*3)
-#define YE NODE
+#define YE 100
 #define inf INT_MAX/2
 #define INF 10000
 #define NUT ((WD+1))
