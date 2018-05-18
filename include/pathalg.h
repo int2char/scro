@@ -15,13 +15,13 @@
 #define BS 5
 #define WD 8
 #ifndef LY 
-	#define LY 80
+	#define LY 20
 #endif
 #ifndef NODE
 	#define NODE 100
 #endif
 #ifndef DSIZE
-	#define DSIZE 20
+	#define DSIZE 2
 #endif
 #ifndef SERT
 	#define SERT 20000
@@ -172,19 +172,19 @@ class PBellmanor:public algbase{
 		int W;
 		vector<vector<Sot>>stpairs;
 		vector<int>L;
-		//
 		vector<vector<int>>esigns;
 		vector<int>Lmark;
 		PBellmanor():L(3,0){};
         virtual void updatE(vector<vector<int>>&_esigns){
         	esigns=_esigns;
-        	memset(p,-1,LY*YE*nodenum*sizeof(int));
         };
         virtual void updatS(vector<vector<Sot>>&stpair){
         	stpairs=stpair;
         	L[0]=0;
         	L[1]=LY1;
         	L[2]=LY;
+        	int size=stpairs[0].size()*L[1]+stpairs[1].size()*(L[2]-L[1]);
+        	memset(p,-1,size*nodenum*sizeof(int));
         }
 	 	virtual void updatR(int k,vector<int>&rout){
 	 		for(int i=0;i<rout.size();i++)
@@ -590,7 +590,7 @@ class PBFSor:public algbase{
         }
         virtual void updatE(vector<vector<int>>&_esigns){
         	esigns=_esigns;
-        	memset(p,-1,LY*YE*nodenum*sizeof(int));
+        	//memset(p,-1,LY*YE*nodenum*sizeof(int));
         };
         virtual void init(pair<vector<edge>,vector<vector<int>>>extenedges,vector<pair<int,int>>stpair,int _nodenum){
         	maxbw=500;
@@ -637,6 +637,8 @@ class PBFSor:public algbase{
                	L[0]=0;
                	L[1]=LY1;
                	L[2]=LY;
+		int size=stpairs[0].size()*L[1]+stpairs[1].size()*(L[2]-L[1]);
+		memset(p,-1,size*nodenum*sizeof(int));
                }
         virtual void updatR(int k,vector<int>&rout){
         	//cout<<"in updat R"<<endl;

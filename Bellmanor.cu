@@ -63,22 +63,8 @@ void Bellmanor::updatS(vector<vector<Sot>>&stpair)
 	clean<<<L[2]*S[1]*pnodesize/512+1,512>>>(dev_d,dev_p,L[2]*S[1]*pnodesize,numoff);
 	Sor<<<L[1]*S[0]/512+1,512>>>(dev_d,dev_p,dev_sor,L[1]*S[0],S[0],0,0);
 	Sor<<<L[2]*S[1]/512+1,512>>>(dev_d,dev_p,dev_sor,L[2]*S[1],S[1],fs,numoff);
-	/*for(int i=0;i<1;i++)
-		{
-			cout<<"********************************************** "<<i<<endl;
-			for(int j=0;j<pnodesize;j++)
-				{
-					cout<<endl;
-					for(int k=0;k<1;k++)
-						{
-							for(int g=0;g<pnodesize;g++)
-								cout<<d[k*S[1]*L[2]*pnodesize+g*S[1]*L[2]+i*S[1]+j]<<" ";					}
-				}
-		}*/
 	Size[0]=nodenum*L[1]*S[0];
 	Size[1]=nodenum*L[2]*S[1];
-	//cudaMemcpy(dev_d,d,L[1]*S[0]*pnodesize*sizeof(int),cudaMemcpyHostToDevice);
-	//cudaMemcpy(dev_d+off,d+off,L[2]*S[1]*pnodesize*sizeof(int),cudaMemcpyHostToDevice);*/
 
 }
 void Bellmanor::init(pair<vector<edge>,vector<vector<int>>>ext,vector<pair<int,int>>stpair,int _nodenum)
