@@ -5,7 +5,7 @@
 #include"pathalg.h"
 #include<set>
 #include<queue>
-#define MAXITER 10000000
+#define MAXITER 1000000
 using namespace std;
 enum SPWAY {NORMAL,ROUTE,ROTATE,ROTATE_DELETE,PUSH};
 struct levelGraph {
@@ -115,7 +115,7 @@ class Graph
 					{
 						int eid=delevent[h][i].second;
 						int k=delevent[h][i].first;
-						esignes[k][eid]*=-1;
+						//esignes[k][eid]*=-1;
 
 					}
         		}
@@ -132,10 +132,10 @@ class Graph
         	cout<<endl;
         	for(int i=0;i<averhops.size();i++)
                 	cout<<averhops[i]<<" ";
-            	cout<<endl;
-            	for(int i=0;i<tasksize.size();i++)
-                	cout<<tasksize[i]<<" ";
-            	cout<<endl;
+            cout<<endl;
+        	for(int i=0;i<tasksize.size();i++)
+            	cout<<tasksize[i]<<" ";
+        	cout<<endl;
         	for(int i=0;i<blocks.size();i++)
         		cout<<blocks[i]<<" ";
         	cout<<endl;
@@ -209,10 +209,10 @@ class Graph
         	vector<vector<Sot>>stpair=Getspair(ds);
         	//cout<<"get pair: "<<startu-starty<<endl;
         	float startu=float(1000*clock())/ CLOCKS_PER_SEC;
-        	if(PARAL>0)
+        	/*if(PARAL>0)
 			router2.updatE(esignes);
 			else
-			router1.updatE(esignes);
+			router1.updatE(esignes);*/
 			float endu=float(1000*clock())/ CLOCKS_PER_SEC;
 			float updating=endu-startu;
         	if(PARAL>0)router2.updatS(stpair);
@@ -229,7 +229,12 @@ class Graph
 			cout<<"rout alg time: "<<endro-startro<<endl;
 			vector<vector<demand>>remain(PC,vector<demand>());
 			float starta=float(1000*clock())/ CLOCKS_PER_SEC;
-			//cout<<"size asasas "<<result[0].size()<<" "<<result[1].size()<<endl;
+			cout<<"size asasas "<<result[0].size()<<" "<<result[1].size()<<endl;
+			if(result[0].size()+result[1].size()==0)
+				{
+					cout<<current<<endl;
+					exit(0);
+				}
 			for(int k=0;k<PC;k++)
 					for(int i=0;i<result[k].size();i++)
 					{
@@ -317,7 +322,7 @@ class Graph
 								for(int i=0;i<rout.size();i++)
 										{
 												int eid=rout[i];
-												esignes[ly][eid]*=-1;
+												//esignes[ly][eid]*=-1;
 										}
 								flag=rout.size();
 								nde.rout=rout;
@@ -422,7 +427,7 @@ class Graph
         							{
                 						int eid=ds[y-1][i].rout[l];
         								w+=esignes[k][eid];
-                						esignes[k][eid]*=-1;
+                						//esignes[k][eid]*=-1;
         							}
         						ds[y-1][i].mark=k;
         						ds[y-1][i].value=w;
@@ -436,7 +441,6 @@ class Graph
         			}
         		}
         	float end=float(1000*clock())/ CLOCKS_PER_SEC;
-        	//cout<<"alg time is "<<end-start<<endl;
         	timecount+=end-start;	
         }
         void sortadd(vector<vector<demand>>&ds,vector<demand>&addin,vector<demand>&block,double&timecount)
@@ -481,7 +485,7 @@ class Graph
 										{
 											int eid=rout[l];
 											w+=esignes[L[y-1]][eid];
-											esignes[L[y-1]][eid]*=-1;
+											//esignes[L[y-1]][eid]*=-1;
 										}
 									router1.updatR(L[y-1],rout);
 									ds[y-1][i].mark=L[y-1];
@@ -502,7 +506,7 @@ class Graph
 												{
 													int eid=ds[y-1][i].rout[l];
 													w+=esignes[k][eid];
-													esignes[k][eid]*=-1;
+													//esignes[k][eid]*=-1;
 												}
 											ds[y-1][i].mark=k;
 											ds[y-1][i].value=w;
@@ -518,7 +522,6 @@ class Graph
                		}
                	float end=float(1000*clock())/ CLOCKS_PER_SEC;
                	timecount+=end-start;		
-               	//cout<<"time is "<<end-start<<endl;
                }
         virtual ~Graph(){ 
         };
@@ -606,7 +609,6 @@ class Graph
             	router2.init(make_pair(redges,esigns),stpair,n);
             	router1.init(make_pair(redges,esigns),stpair,n);
             }
-           // cout<<"init end"<<endl;
             return make_pair(redges,esigns);
         };
 };
