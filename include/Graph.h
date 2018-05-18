@@ -115,7 +115,7 @@ class Graph
 					{
 						int eid=delevent[h][i].second;
 						int k=delevent[h][i].first;
-						//esignes[k][eid]*=-1;
+						esignes[k][eid]*=-1;
 
 					}
         		}
@@ -209,10 +209,10 @@ class Graph
         	vector<vector<Sot>>stpair=Getspair(ds);
         	//cout<<"get pair: "<<startu-starty<<endl;
         	float startu=float(1000*clock())/ CLOCKS_PER_SEC;
-        	/*if(PARAL>0)
+        	if(PARAL>0)
 			router2.updatE(esignes);
 			else
-			router1.updatE(esignes);*/
+			router1.updatE(esignes);
 			float endu=float(1000*clock())/ CLOCKS_PER_SEC;
 			float updating=endu-startu;
         	if(PARAL>0)router2.updatS(stpair);
@@ -230,11 +230,6 @@ class Graph
 			vector<vector<demand>>remain(PC,vector<demand>());
 			float starta=float(1000*clock())/ CLOCKS_PER_SEC;
 			cout<<"size asasas "<<result[0].size()<<" "<<result[1].size()<<endl;
-			if(result[0].size()+result[1].size()==0)
-				{
-					cout<<current<<endl;
-					exit(0);
-				}
 			for(int k=0;k<PC;k++)
 					for(int i=0;i<result[k].size();i++)
 					{
@@ -322,7 +317,7 @@ class Graph
 								for(int i=0;i<rout.size();i++)
 										{
 												int eid=rout[i];
-												//esignes[ly][eid]*=-1;
+												esignes[ly][eid]*=-1;
 										}
 								flag=rout.size();
 								nde.rout=rout;
@@ -427,7 +422,7 @@ class Graph
         							{
                 						int eid=ds[y-1][i].rout[l];
         								w+=esignes[k][eid];
-                						//esignes[k][eid]*=-1;
+                						esignes[k][eid]*=-1;
         							}
         						ds[y-1][i].mark=k;
         						ds[y-1][i].value=w;
@@ -485,7 +480,7 @@ class Graph
 										{
 											int eid=rout[l];
 											w+=esignes[L[y-1]][eid];
-											//esignes[L[y-1]][eid]*=-1;
+											esignes[L[y-1]][eid]*=-1;
 										}
 									router1.updatR(L[y-1],rout);
 									ds[y-1][i].mark=L[y-1];
@@ -506,7 +501,7 @@ class Graph
 												{
 													int eid=ds[y-1][i].rout[l];
 													w+=esignes[k][eid];
-													//esignes[k][eid]*=-1;
+													esignes[k][eid]*=-1;
 												}
 											ds[y-1][i].mark=k;
 											ds[y-1][i].value=w;
@@ -534,7 +529,6 @@ class Graph
         };
         virtual void GenGraph()=0;
         Graph(int _n,int _degree,algbase&alg1,algbase&alg2):n(_n),width(WD),remain(500),etn2n(n*(width+1),-1),maxnode(0),router1(alg1),router2(alg2),neartable(_n,vector<int>()){
-
         };
         pair<vector<edge>,vector<vector<int>>> extend()
         {

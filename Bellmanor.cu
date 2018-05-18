@@ -121,7 +121,7 @@ void Bellmanor::init(pair<vector<edge>,vector<vector<int>>>ext,vector<pair<int,i
 			rudw[cou2++]=esigns[k][ruw[i][j]];
 	}
 	int count=0;
-	sor=new int[2*YE];
+	sor=new int[2*NODE];
 	cudaMalloc((void**)&dev_d,YE*LY*nodenum*sizeof(int));
 	cudaMalloc((void**)&dev_p,YE*LY*nodenum*sizeof(int));
 	cudaMalloc((void**)&dev_mm,(pnodesize+1)*sizeof(int));
@@ -129,7 +129,7 @@ void Bellmanor::init(pair<vector<edge>,vector<vector<int>>>ext,vector<pair<int,i
 	cudaMalloc((void**)&dev_rudu,edges.size()*sizeof(int));
 	cudaMalloc((void**)&dev_rudw,edges.size()*LY*sizeof(int));
 	cudaMalloc((void**)&dev_rid,edges.size()*sizeof(int));
-	cudaMalloc((void**)&dev_sor,2*YE*sizeof(int));
+	cudaMalloc((void**)&dev_sor,2*NODE*sizeof(int));
 	cudaMemcpy(dev_rudu,rudu,edges.size()*sizeof(int),cudaMemcpyHostToDevice);
 	cudaMemcpy(dev_rudw,rudw,edges.size()*LY*sizeof(int),cudaMemcpyHostToDevice);
 	cudaMemcpy(dev_rid,rid,edges.size()*sizeof(int),cudaMemcpyHostToDevice);

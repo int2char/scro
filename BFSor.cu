@@ -119,7 +119,7 @@ void BFSor::init(pair<vector<edge>,vector<vector<int>>>ext,vector<pair<int,int>>
 			rudw[cou2++]=esigns[k][ruw[i][j]];
 	}
 	int count=0;
-	sor=new int[2*YE];
+	sor=new int[2*NODE];
 
 	cudaMalloc((void**)&dev_d,YE*LY*nodenum*sizeof(int));
 	cudaMalloc((void**)&dev_p,YE*LY*nodenum*sizeof(int));
@@ -128,7 +128,7 @@ void BFSor::init(pair<vector<edge>,vector<vector<int>>>ext,vector<pair<int,int>>
 	cudaMalloc((void**)&dev_rudu,edges.size()*sizeof(int));
 	cudaMalloc((void**)&dev_rudw,edges.size()*LY*sizeof(int));
 	cudaMalloc((void**)&dev_rid,edges.size()*sizeof(int));
-	cudaMalloc((void**)&dev_sor,2*YE*sizeof(int));
+	cudaMalloc((void**)&dev_sor,2*NODE*sizeof(int));
 	cudaMemcpy(dev_rudu,rudu,edges.size()*sizeof(int),cudaMemcpyHostToDevice);
 	cudaMemcpy(dev_rudw,rudw,edges.size()*LY*sizeof(int),cudaMemcpyHostToDevice);
 	cudaMemcpy(dev_rid,rid,edges.size()*sizeof(int),cudaMemcpyHostToDevice);
@@ -211,7 +211,6 @@ vector<vector<Rout>> BFSor::routalg(int s,int t,int bw)
 	dim3 blocks_s1(S[0]*L[1]/512+1,pnodesize);
 	dim3 blocks_s2(S[1]*L[2]/512+1,pnodesize);
 	int sizeoff=S[0]*L[1]*nodenum;
-
 	for(int i=0;i<WD;i++)
 		{
 			BFSFu<<<blocks_s1,512,0,stream0>>>(dev_rudu,dev_rudw,dev_rid,dev_d,dev_p,i,edges.size(),pnodesize,0,0,S[0]*L[1],S[0],dev_mm,dev_ss);
